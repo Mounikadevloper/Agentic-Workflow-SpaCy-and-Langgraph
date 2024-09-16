@@ -1,0 +1,2 @@
+Langgraph-based Query Processor with Feedback and Reflection
+This project implements an agentic workflow using Langgraph. It utilizes a pipeline that splits a user query into sub-tasks using a PlanAgent and solves them iteratively with a ToolAgent. The pipeline integrates feedback loops and reflection to ensure reliability. A natural language processing model (SpaCy's en_core_web_sm) is used, and the project is built to work with the Streamlit interface for easy user interaction.
