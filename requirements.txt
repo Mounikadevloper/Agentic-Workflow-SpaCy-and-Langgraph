@@ -1,12 +1,5 @@
 streamlit
-transformers
 spacy
+transformers
 thinc
-en-core-web-sm
-
-
-
-
-
-
-
+-e .
