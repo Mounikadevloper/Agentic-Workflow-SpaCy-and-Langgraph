@@ -1,12 +1,20 @@
-# app.py
 import streamlit as st
-import spacy  # Ensure spaCy is imported
+import spacy
 from agents.plan_agent import PlanAgent
 from tools.language_model_tool import LanguageModelTool
 from tools.feedback_reflection import FeedbackReflection
 
 # Load SpaCy model
-nlp = spacy.load('en_core_web_sm')
+def load_spacy_model(model_name='en_core_web_sm'):
+    try:
+        return spacy.load(model_name)
+    except OSError:
+        import spacy.cli
+        spacy.cli.download(model_name)
+        return spacy.load(model_name)
+
+nlp = load_spacy_model()
+
 # Initialize tools and agents
 language_model_tool = LanguageModelTool()
 feedback_reflection = FeedbackReflection()
