@@ -2,6 +2,9 @@ import spacy
 import subprocess
 import streamlit as st
 import sys
+import spacy
+spacy.cli.download("en-core-web-sm")
+
 
 def ensure_spacy_model():
     try:
