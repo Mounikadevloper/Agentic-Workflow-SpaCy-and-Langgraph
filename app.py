@@ -7,24 +7,13 @@ from tools.feedback_reflection import FeedbackReflection
 # Load SpaCy model
 def load_spacy_model(model_name='en_core_web_sm'):
     try:
-        # Attempt to load the model
         return spacy.load(model_name)
     except OSError:
-        # If model is not found, download it
         import spacy.cli
         spacy.cli.download(model_name)
         return spacy.load(model_name)
 
-# Initialize SpaCy model
-try:
-    nlp = load_spacy_model()
-except Exception as e:
-    st.error(f"An error occurred while loading the SpaCy model: {e}")
-    nlp = None
-
-# Check if the model was loaded successfully
-if nlp is None:
-    st.stop()
+nlp = load_spacy_model()
 
 # Initialize tools and agents
 language_model_tool = LanguageModelTool()
@@ -62,4 +51,3 @@ if st.button("Process Query"):
         st.json(feedback)
     else:
         st.warning("Please enter a query.")
-
