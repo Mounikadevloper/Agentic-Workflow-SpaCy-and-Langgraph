@@ -1,6 +1,8 @@
 streamlit
 spacy
 transformers
+thinc
+
 
 
 
