@@ -1,6 +1,4 @@
 # app.py
-pip install spacy
-
 import streamlit as st
 import spacy  # Ensure spaCy is imported
 from agents.plan_agent import PlanAgent
@@ -9,7 +7,6 @@ from tools.feedback_reflection import FeedbackReflection
 
 # Load SpaCy model
 nlp = spacy.load('en_core_web_sm')
-
 # Initialize tools and agents
 language_model_tool = LanguageModelTool()
 feedback_reflection = FeedbackReflection()
