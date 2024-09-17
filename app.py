@@ -1,54 +1,55 @@
 import spacy
-import subprocess
+from spacy.cli import download
+
+# Attempt to load the model, and download it if not available
+try:
+    nlp = spacy.load('en_core_web_sm')
+except OSError:
+    download('en_core_web_sm')
+    nlp = spacy.load('en_core_web_sm')
+    
+# app.py
 import streamlit as st
-import sys
-import os
+from agents.plan_agent import PlanAgent
+from tools.language_model_tool import LanguageModelTool
+from tools.feedback_reflection import FeedbackReflection
 
-def ensure_spacy_model():
-    # Function to install SpaCy and download the model
-    def install_spacy_and_model():
-        st.write("Attempting to install SpaCy and download the model...")
+# Load SpaCy model
+nlp = spacy.load('en_core_web_sm')
 
-        # Update pip to the latest version
-        result = subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], capture_output=True, text=True)
-        if result.returncode != 0:
-            st.error(f"Error updating pip: {result.stderr}")
-            return
+# Initialize tools and agents
+language_model_tool = LanguageModelTool()
+feedback_reflection = FeedbackReflection()
+plan_agent = PlanAgent(tools=[language_model_tool])
 
-        # Install SpaCy
-        result = subprocess.run([sys.executable, "-m", "pip", "install", "spacy"], capture_output=True, text=True)
-        if result.returncode != 0:
-            st.error(f"Error installing SpaCy: {result.stderr}")
-            return
+def process_query(user_query):
+    # Plan tasks
+    tasks = plan_agent.plan(user_query)
+    
+    # Process tasks
+    results = []
+    for task in tasks:
+        result = plan_agent.process_task(task)
+        results.append(result)
+    
+    # Provide feedback
+    feedback = feedback_reflection.get_feedback(results)
+    
+    return results, feedback
 
-        # Download the model
-        result = subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], capture_output=True, text=True)
-        if result.returncode != 0:
-            st.error(f"Error downloading SpaCy model: {result.stderr}")
-            return
+# Streamlit app
+st.title('Agentic Workflow Pipeline')
 
-        # Verify installation
-        try:
-            spacy.load('en_core_web_sm')
-            st.write("SpaCy and the model have been installed and downloaded successfully.")
-        except Exception as e:
-            st.error(f"An error occurred while loading SpaCy model: {e}")
+st.write("This application processes user queries using a pipeline of agents and tools.")
 
-    # Check if SpaCy model is already installed
-    try:
-        spacy.load('en_core_web_sm')
-        st.write("SpaCy model is already installed and loaded.")
-    except OSError as e:
-        st.write("SpaCy model not found. Installing...")
-        install_spacy_and_model()
-    except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
+user_query = st.text_input("Enter your query:")
 
-# Streamlit app interface
-st.title('SpaCy Dependency Check')
-
-# Ensure SpaCy and the model are available
-ensure_spacy_model()
-
-# Rest of your Streamlit app code
-# Add additional functionality here
+if st.button("Process Query"):
+    if user_query:
+        results, feedback = process_query(user_query)
+        st.write("Results:")
+        st.json(results)
+        st.write("Feedback:")
+        st.json(feedback)
+    else:
+        st.warning("Please enter a query.")
