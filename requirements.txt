@@ -2,7 +2,7 @@ spacy
 streamlit
 langchain
 transformers
-spacy==3.5.0  
+
 
 
 
