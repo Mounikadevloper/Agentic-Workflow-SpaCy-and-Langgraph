@@ -1,3 +1,13 @@
+import spacy
+from spacy.cli import download
+
+# Attempt to load the model, and download it if not available
+try:
+    nlp = spacy.load('en_core_web_sm')
+except OSError:
+    download('en_core_web_sm')
+    nlp = spacy.load('en_core_web_sm')
+    
 # app.py
 import streamlit as st
 from agents.plan_agent import PlanAgent
