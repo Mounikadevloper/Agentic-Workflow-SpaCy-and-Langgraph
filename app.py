@@ -1,7 +1,8 @@
-
-    
 # app.py
+pip install spacy
+
 import streamlit as st
+import spacy  # Ensure spaCy is imported
 from agents.plan_agent import PlanAgent
 from tools.language_model_tool import LanguageModelTool
 from tools.feedback_reflection import FeedbackReflection
