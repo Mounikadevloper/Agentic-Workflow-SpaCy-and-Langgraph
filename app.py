@@ -27,8 +27,8 @@ def load_plan_agent():
 
 plan_agent, feedback_reflection = load_plan_agent()
 
-# Function to process individual tasks with timeout
-def process_task_with_timeout(task, timeout=10):
+# Function to process individual tasks with a 20-second timeout
+def process_task_with_timeout(task, timeout=20):  # Timeout set to 20 seconds
     try:
         with ThreadPoolExecutor() as executor:
             future = executor.submit(plan_agent.process_task, task)
@@ -54,7 +54,7 @@ def process_query(user_query):
     results = []
     for task in tasks:
         st.write(f"Processing task: {task}")
-        result = process_task_with_timeout(task)
+        result = process_task_with_timeout(task)  # Process with 20-second timeout
         st.write(f"Result: {result}")
         results.append(result)
     
@@ -80,12 +80,4 @@ if st.button("Process Query"):
             start_time = time.time()
             results, feedback = process_query(user_query)
             end_time = time.time()
-            st.success(f"Query processed in {end_time - start_time:.2f} seconds")
-        
-        # Display results and feedback
-        st.write("Results:")
-        st.json(results)
-        st.write("Feedback:")
-        st.json(feedback)
-    else:
-        st.warning("Please enter a query.")
+            st.success(f"Query processed in {end_time - start
