@@ -28,7 +28,7 @@ def load_plan_agent():
 plan_agent, feedback_reflection = load_plan_agent()
 
 # Function to process individual tasks with a 20-second timeout
-def process_task_with_timeout(task, timeout=20):  # Timeout set to 20 seconds
+def process_task_with_timeout(task, timeout=5):  # Timeout set to 20 seconds
     try:
         with ThreadPoolExecutor() as executor:
             future = executor.submit(plan_agent.process_task, task)
