@@ -1,11 +1,22 @@
-# setup.py
-import spacy
+from setuptools import setup
+import subprocess
+import sys
 
-def download_spacy_model():
-    try:
-        spacy.cli.download("en_core_web_sm")
-    except Exception as e:
-        print(f"Error downloading SpaCy model: {e}")
+def install_spacy_model():
+    subprocess.check_call([sys.executable, '-m', 'spacy', 'download', 'en_core_web_sm'])
 
-if __name__ == "__main__":
-    download_spacy_model()
+# Run the function to install the SpaCy model
+install_spacy_model()
+
+setup(
+    name='agentic-workflow',
+    version='0.1',
+    packages=['agents', 'tools'],
+    install_requires=[
+        'streamlit',
+        'spacy',
+        'transformers',
+        # Add other dependencies as needed
+    ],
+    # Add other setup parameters if needed
+)
