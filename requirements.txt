@@ -2,4 +2,6 @@ spacy
 streamlit
 langchain
 transformers
+spacy==3.5.0  # or the version you're using
+
 
