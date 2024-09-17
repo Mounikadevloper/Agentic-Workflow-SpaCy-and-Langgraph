@@ -80,4 +80,13 @@ if st.button("Process Query"):
             start_time = time.time()
             results, feedback = process_query(user_query)
             end_time = time.time()
-            st.success(f"Query processed in {end_time - start
+            # Corrected this line
+            st.success(f"Query processed in {end_time - start_time:.2f} seconds")  # Correct f-string
+        
+        # Display results and feedback
+        st.write("Results:")
+        st.json(results)
+        st.write("Feedback:")
+        st.json(feedback)
+    else:
+        st.warning("Please enter a query.")
