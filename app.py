@@ -4,63 +4,49 @@ import streamlit as st
 from agents.plan_agent import PlanAgent
 from tools.language_model_tool import LanguageModelTool
 from tools.feedback_reflection import FeedbackReflection
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Load SpaCy model (with error handling to ensure the model is downloaded)
-@st.cache_resource
+# Load SpaCy model (with debug messages)
 def load_spacy_model():
     try:
-        return spacy.load('en_core_web_sm')
+        st.write("Loading SpaCy model...")
+        model = spacy.load('en_core_web_sm')
+        st.write("SpaCy model loaded successfully.")
+        return model
     except OSError:
+        st.write("SpaCy model not found. Downloading...")
         download('en_core_web_sm')
-        return spacy.load('en_core_web_sm')
+        model = spacy.load('en_core_web_sm')
+        st.write("SpaCy model downloaded and loaded successfully.")
+        return model
 
 nlp = load_spacy_model()
 
-# Cache the initialization of agents and tools
-@st.cache_resource
+# Initialize agents and tools (without caching for debugging)
 def load_plan_agent():
+    st.write("Initializing PlanAgent and tools...")
     language_model_tool = LanguageModelTool()
     feedback_reflection = FeedbackReflection()
     return PlanAgent(tools=[language_model_tool]), feedback_reflection
 
 plan_agent, feedback_reflection = load_plan_agent()
 
-# Function to process individual tasks with a 20-second timeout
-def process_task_with_timeout(task, timeout=5):  # Timeout set to 20 seconds
-    try:
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(plan_agent.process_task, task)
-            return future.result(timeout=timeout)
-    except Exception as e:
-        return f"Task processing failed: {str(e)}"
-
-# Main processing function
 def process_query(user_query):
-    # Plan tasks
+    st.write("Processing user query...")
     st.write("Planning tasks...")
-    try:
-        tasks = plan_agent.plan(user_query)
-    except Exception as e:
-        st.error(f"Error in task planning: {str(e)}")
-        return [], {}
-
+    tasks = plan_agent.plan(user_query)
     st.write(f"Planned tasks: {tasks}")
     
-    st.write("Processing tasks... This may take a moment.")
-
-    # Use thread pool to process tasks in parallel with timeouts
+    st.write("Processing tasks...")
     results = []
     for task in tasks:
         st.write(f"Processing task: {task}")
-        result = process_task_with_timeout(task)  # Process with 20-second timeout
+        result = plan_agent.process_task(task)
         st.write(f"Result: {result}")
         results.append(result)
     
-    # Get feedback
-    st.write("Generating feedback...")
+    st.write("Getting feedback...")
     feedback = feedback_reflection.get_feedback(results)
+    st.write(f"Feedback: {feedback}")
     
     return results, feedback
 
@@ -75,18 +61,11 @@ user_query = st.text_input("Enter your query:")
 # Process the query on button click
 if st.button("Process Query"):
     if user_query:
-        # Add a loading message
-        with st.spinner("Processing your query..."):
-            start_time = time.time()
-            results, feedback = process_query(user_query)
-            end_time = time.time()
-            # Corrected this line
-            st.success(f"Query processed in {end_time - start_time:.2f} seconds")  # Correct f-string
-        
-        # Display results and feedback
+        results, feedback = process_query(user_query)
         st.write("Results:")
         st.json(results)
         st.write("Feedback:")
         st.json(feedback)
     else:
         st.warning("Please enter a query.")
+
